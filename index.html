@@ -120,9 +120,9 @@
             text-shadow: 3px 3px 0 #7b3f00;
         }
 
-        /* Rainbow text animation - way slower and smoother */
+        /* Rainbow text animation - smaller font, slower and smoother */
         .rainbow-text {
-            font-size: 1.2rem;
+            font-size: 0.9rem;      /* smaller text */
             font-weight: bold;
             background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
             background-size: 400% 100%;
@@ -132,6 +132,7 @@
             animation: rainbowFlow 8s linear infinite; /* Slower: 8 seconds for a full cycle */
             display: inline-block;
             will-change: background-position;
+            letter-spacing: 0.5px;
         }
 
         @keyframes rainbowFlow {
@@ -594,7 +595,7 @@
     <div id="startPanel" class="panel start-page">
         <div class="logo-area">
             <h1>RetroCore</h1>
-            <p class="rainbow-text">Good site to download free Apps</p>
+            <p class="rainbow-text">Good site to download Win, Free Games, Apps</p>
         </div>
         <div class="button-group">
             <button id="bootBtn" class="win95-btn">🖥️ Win Simulator</button>
