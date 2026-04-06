@@ -35,7 +35,7 @@
             border: 3px solid #ffffff8c;
         }
 
-        /* Panel animations */
+        /* Panel animations - smoother and slightly slower */
         .panel {
             width: 100%;
             height: 100%;
@@ -43,7 +43,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            transition: opacity 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.3s ease, visibility 0.3s;
+            transition: opacity 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.4s ease, visibility 0.4s;
             overflow: auto;
             will-change: transform, opacity;
         }
@@ -55,26 +55,62 @@
             transform: scale(0.96);
         }
 
-        /* START PAGE */
+        /* START PAGE - ANIMATED LOOPING BACKGROUND (slower) */
         .start-page {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at 30% 20%, #a7c5c5, #1e5a5a);
-            backdrop-filter: blur(2px);
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(125deg, #1a4a4a, #0e3a3a, #2a5a5a, #0a2f2f);
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite; /* Slower: 20 seconds */
+        }
+
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Optional: overlay scanline effect for extra retro vibe */
+        .start-page::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03) 0px,
+                rgba(0, 0, 0, 0.03) 2px,
+                transparent 2px,
+                transparent 6px
+            );
+            pointer-events: none;
+            z-index: 1;
         }
 
         .logo-area {
             text-align: center;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.55);
             padding: 30px 50px;
             border-radius: 28px;
             margin-bottom: 40px;
             border: 2px solid #f0f0f0;
             box-shadow: inset 0 0 10px #00000033, 8px 8px 0 #00000055;
-            animation: fadeSlideUp 0.5s ease-out;
+            animation: fadeSlideUp 0.6s ease-out;
+            backdrop-filter: blur(4px);
+            z-index: 2;
         }
 
         .logo-area h1 {
@@ -84,25 +120,49 @@
             text-shadow: 3px 3px 0 #7b3f00;
         }
 
+        /* Rainbow text animation - way slower and smoother */
+        .rainbow-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbowFlow 8s linear infinite; /* Slower: 8 seconds for a full cycle */
+            display: inline-block;
+            will-change: background-position;
+        }
+
+        @keyframes rainbowFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 400% 50%;
+            }
+        }
+
         .button-group {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
             margin-bottom: 30px;
+            z-index: 2;
         }
 
         .win95-btn {
             background: #c0c0c0;
             border: 3px solid;
             border-color: #ffffff #808080 #808080 #ffffff;
-            padding: 14px 28px;
-            font-size: 1.5rem;
+            padding: 12px 24px;
+            font-size: 1.3rem;
             font-weight: bold;
             font-family: monospace;
             cursor: pointer;
             box-shadow: 2px 2px 6px black;
-            transition: all 0.08s linear, transform 0.1s ease, box-shadow 0.1s ease;
+            transition: all 0.08s linear, transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .win95-btn:hover {
@@ -120,14 +180,15 @@
         /* External links section */
         .external-section {
             margin-top: 20px;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             border-radius: 24px;
             padding: 20px 30px;
             backdrop-filter: blur(4px);
             border: 1px solid #ffffffaa;
             width: 100%;
             max-width: 800px;
-            animation: fadeSlideUp 0.5s ease-out 0.1s both;
+            animation: fadeSlideUp 0.6s ease-out 0.1s both;
+            z-index: 2;
         }
 
         .external-title {
@@ -151,8 +212,8 @@
             background: #c0c0c0;
             border: 3px solid;
             border-color: #ffffff #808080 #808080 #ffffff;
-            padding: 12px 24px;
-            font-size: 1.2rem;
+            padding: 10px 20px;
+            font-size: 1.1rem;
             font-weight: bold;
             font-family: monospace;
             cursor: pointer;
@@ -161,7 +222,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            transition: all 0.08s linear, transform 0.1s ease, box-shadow 0.1s ease;
+            transition: all 0.08s linear, transform 0.15s ease, box-shadow 0.15s ease;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
 
@@ -190,58 +251,75 @@
             text-shadow: 1px 1px 0 black;
         }
 
-        /* OWNER PANEL */
-        .owner-page, .info-page {
+        /* Common panel styles for owner, info, apps */
+        .info-page, .owner-page, .apps-page {
             background: #c0c0c0;
             padding: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .owner-card, .info-card {
+        .info-card, .owner-card, .apps-card {
             background: #ece9d8;
             border: 4px ridge #ffffff;
             max-width: 600px;
             padding: 30px;
             box-shadow: 10px 10px 0px #808080;
-            animation: popIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+            animation: popIn 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+            width: 100%;
         }
-        .owner-links {
+        .apps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .app-link {
+            background: #c0c0c0;
+            border: 3px outset #ffffff;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.2rem;
+            transition: all 0.15s ease;
+        }
+        .app-link:hover {
+            background: #d4d4d4;
+            transform: translateX(5px);
+        }
+        .owner-links, .social-links {
             display: flex;
             gap: 24px;
             justify-content: center;
             margin: 30px 0;
             flex-wrap: wrap;
         }
-        .owner-btn {
+        .owner-btn, .back-btn {
             background: #c0c0c0;
             border: 3px outset #ffffff;
-            padding: 12px 22px;
+            padding: 10px 20px;
             text-decoration: none;
             color: black;
             font-weight: bold;
             font-family: monospace;
             cursor: pointer;
             display: inline-block;
-            font-size: 1.1rem;
-            transition: all 0.1s ease, transform 0.05s linear;
+            font-size: 1rem;
+            transition: all 0.15s ease;
         }
-        .owner-btn:hover {
-            background: #d4d4d4;
+        .owner-btn:hover, .back-btn:hover {
+            background: #b0b0b0;
             transform: scale(1.02);
         }
         .back-btn {
-            margin-top: 30px;
+            margin-top: 20px;
             background: silver;
-            padding: 10px 25px;
             border: 2px outset white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.1s ease;
-        }
-        .back-btn:hover {
-            background: #b0b0b0;
-            transform: scale(1.02);
         }
 
         /* DESKTOP (emoji icons) */
@@ -260,7 +338,7 @@
             cursor: pointer;
             padding: 6px 2px;
             border-radius: 4px;
-            transition: all 0.08s linear, transform 0.1s ease;
+            transition: all 0.1s ease, transform 0.15s ease;
             will-change: transform;
         }
         .desktop-icon:hover {
@@ -315,7 +393,7 @@
             cursor: pointer;
             font-family: monospace;
             margin-right: 12px;
-            transition: all 0.08s linear;
+            transition: all 0.1s ease;
         }
         .start-button:hover {
             background: #d4d4d4;
@@ -330,8 +408,6 @@
             font-size: 13px;
             font-weight: bold;
         }
-
-        /* START MENU ANIMATION */
         .start-menu {
             position: absolute;
             bottom: 48px;
@@ -343,11 +419,9 @@
             z-index: 1000;
             box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
             transform-origin: bottom left;
-            animation: menuPop 0.15s ease-out;
+            animation: menuPop 0.2s ease-out;
         }
-        .start-menu.hidden {
-            display: none;
-        }
+        .start-menu.hidden { display: none; }
         @keyframes menuPop {
             0% { opacity: 0; transform: scale(0.9); }
             100% { opacity: 1; transform: scale(1); }
@@ -368,7 +442,7 @@
             gap: 12px;
             cursor: pointer;
             font-size: 14px;
-            transition: background 0.05s linear;
+            transition: background 0.08s linear;
         }
         .start-item:hover {
             background: #000080;
@@ -376,7 +450,7 @@
         }
         .separator { height: 2px; background: #808080; margin: 4px 0; }
 
-        /* WINDOW ANIMATION */
+        /* WINDOW ANIMATION - smoother */
         .win95-window {
             position: absolute;
             background: #c0c0c0;
@@ -387,10 +461,10 @@
             min-width: 280px;
             resize: both;
             overflow: auto;
-            animation: windowAppear 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            animation: windowAppear 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         @keyframes windowAppear {
-            0% { opacity: 0; transform: scale(0.92); }
+            0% { opacity: 0; transform: scale(0.94); }
             100% { opacity: 1; transform: scale(1); }
         }
         .window-titlebar {
@@ -409,7 +483,7 @@
             text-align: center;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.05s linear;
+            transition: all 0.08s linear;
         }
         .window-close:hover {
             background: #a0a0a0;
@@ -442,11 +516,9 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.05s linear;
+            transition: all 0.08s linear;
         }
-        .ms-cell:active {
-            transform: scale(0.96);
-        }
+        .ms-cell:active { transform: scale(0.96); }
         .ms-cell.revealed {
             background: #ece9d8;
             border: 1px solid #808080;
@@ -469,7 +541,7 @@
             line-height: 64px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.08s linear;
+            transition: all 0.1s ease;
         }
         .ttt-cell:hover {
             background: #d4d4d4;
@@ -483,7 +555,7 @@
             cursor: pointer;
             margin-top: 8px;
             font-family: monospace;
-            transition: all 0.08s linear;
+            transition: all 0.1s ease;
         }
         button.game-reset:hover {
             background: #d4d4d4;
@@ -506,41 +578,29 @@
             pointer-events: none;
         }
 
-        /* Keyframes */
         @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @keyframes popIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 <div class="app-container">
-    <!-- START PANEL -->
+    <!-- START PANEL - animated looping background (slower) -->
     <div id="startPanel" class="panel start-page">
         <div class="logo-area">
             <h1>RetroCore</h1>
-            <p>Relive the nostalgia</p>
+            <p class="rainbow-text">Good site to download free Apps</p>
         </div>
         <div class="button-group">
             <button id="bootBtn" class="win95-btn">🖥️ Win Simulator</button>
             <button id="infoBtn" class="win95-btn">ℹ️ INFO</button>
             <button id="ownerBtn" class="win95-btn">👤 FIND OWNER</button>
+            <button id="appsBtn" class="win95-btn">📦 More App's</button>
         </div>
         <div class="external-section">
             <div class="external-title">📡 EXTERNAL SITES</div>
@@ -556,7 +616,7 @@
                 </a>
             </div>
         </div>
-        <div style="margin-top:25px; font-size:12px; color:white; background:#00000077; padding:4px 12px; border-radius:20px;">© KrisXxXLL</div>
+        <div style="margin-top:25px; font-size:12px; color:white; background:#00000077; padding:4px 12px; border-radius:20px; z-index:2;">© KrisXxXLL</div>
     </div>
 
     <!-- BOOT PANEL (Windows 95 Simulator) -->
@@ -565,7 +625,7 @@
         <div id="taskbar" class="taskbar"></div>
     </div>
 
-    <!-- INFO PANEL - Updated site features -->
+    <!-- INFO PANEL -->
     <div id="infoPanel" class="panel hidden">
         <div class="info-page">
             <div class="info-card">
@@ -602,6 +662,24 @@
             </div>
         </div>
     </div>
+
+    <!-- MORE APPS PANEL -->
+    <div id="appsPanel" class="panel hidden">
+        <div class="apps-page">
+            <div class="apps-card">
+                <h2 style="color:#000080;">📦 More Applications</h2>
+                <p>Download or visit these popular software and game platforms:</p>
+                <div class="apps-list">
+                    <a href="https://store.steampowered.com/about/" target="_blank" class="app-link">🎮 Steam</a>
+                    <a href="https://store.epicgames.com/en-US/download" target="_blank" class="app-link">🛸 Epic Games</a>
+                    <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank" class="app-link">📦 Oracle VirtualBox</a>
+                    <a href="https://www.utorrent.com/downloads/win/" target="_blank" class="app-link">⚡ uTorrent Web</a>
+                    <a href="https://windhawk.net/" target="_blank" class="app-link">🪶 Windhawk</a>
+                </div>
+                <button id="backToStartFromApps" class="back-btn">◀ Back to Start</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -610,11 +688,14 @@
     const bootPanel = document.getElementById('bootPanel');
     const infoPanel = document.getElementById('infoPanel');
     const ownerPanel = document.getElementById('ownerPanel');
+    const appsPanel = document.getElementById('appsPanel');
     const bootBtn = document.getElementById('bootBtn');
     const infoBtn = document.getElementById('infoBtn');
     const ownerBtn = document.getElementById('ownerBtn');
+    const appsBtn = document.getElementById('appsBtn');
     const backToStartInfo = document.getElementById('backToStartFromInfo');
     const backToStartOwner = document.getElementById('backToStartFromOwner');
+    const backToStartApps = document.getElementById('backToStartFromApps');
     const ownerDiscordBtn = document.getElementById('ownerDiscordBtn');
 
     let simInitialized = false;
@@ -625,10 +706,12 @@
         bootPanel.classList.add('hidden');
         infoPanel.classList.add('hidden');
         ownerPanel.classList.add('hidden');
+        appsPanel.classList.add('hidden');
         if(panel === 'start') startPanel.classList.remove('hidden');
         if(panel === 'boot') bootPanel.classList.remove('hidden');
         if(panel === 'info') infoPanel.classList.remove('hidden');
         if(panel === 'owner') ownerPanel.classList.remove('hidden');
+        if(panel === 'apps') appsPanel.classList.remove('hidden');
     }
 
     function showToast(msg, duration=2000) {
@@ -647,11 +730,13 @@
 
     backToStartInfo.onclick = () => showPanel('start');
     backToStartOwner.onclick = () => showPanel('start');
+    backToStartApps.onclick = () => showPanel('start');
     bootBtn.onclick = () => { if(!simInitialized) initDesktop(); simInitialized=true; showPanel('boot'); };
     infoBtn.onclick = () => showPanel('info');
     ownerBtn.onclick = () => showPanel('owner');
+    appsBtn.onclick = () => showPanel('apps');
 
-    // Window creation with animation handled by CSS
+    // Window creation
     function createWindow(title, contentHTML, width=360, height=260, x=null, y=null) {
         const desktop = document.getElementById('winDesktop');
         const win = document.createElement('div');
@@ -685,7 +770,7 @@
         return win;
     }
 
-    // Minesweeper, TicTacToe (same as before, but with animations)
+    // Minesweeper
     function openMinesweeper() {
         const rows=6, cols=6, mineCount=6;
         let board = Array(rows).fill().map(()=>Array(cols).fill(0));
@@ -780,6 +865,7 @@
         resetBtn.onclick = () => resetGame();
     }
 
+    // Tic-Tac-Toe
     function openTicTacToe() {
         let boardT = ['','','','','','','','',''];
         let playerTurn = true;
@@ -862,6 +948,7 @@
         updateStatus("Your turn (X)");
     }
 
+    // Desktop initialization
     function initDesktop() {
         const desktop = document.getElementById('winDesktop');
         const taskbarDiv = document.getElementById('taskbar');
