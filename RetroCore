@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>RetroCore Simulator | KrisXxXLL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0a2f2f 0%, #0a3f3f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Microsoft Sans Serif', 'Times New Roman', monospace;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 1200px;
+            max-width: 95vw;
+            height: 85vh;
+            min-height: 600px;
+            background: #c0c0c0;
+            border-radius: 12px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #ffffff8c;
+        }
+
+        /* Panel animations */
+        .panel {
+            width: 100%;
+            height: 100%;
+            background: #c0c0c0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.3s ease, visibility 0.3s;
+            overflow: auto;
+            will-change: transform, opacity;
+        }
+
+        .panel.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: scale(0.96);
+        }
+
+        /* START PAGE */
+        .start-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 20%, #a7c5c5, #1e5a5a);
+            backdrop-filter: blur(2px);
+            padding: 20px;
+        }
+
+        .logo-area {
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 30px 50px;
+            border-radius: 28px;
+            margin-bottom: 40px;
+            border: 2px solid #f0f0f0;
+            box-shadow: inset 0 0 10px #00000033, 8px 8px 0 #00000055;
+            animation: fadeSlideUp 0.5s ease-out;
+        }
+
+        .logo-area h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #ffd966;
+            text-shadow: 3px 3px 0 #7b3f00;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .win95-btn {
+            background: #c0c0c0;
+            border: 3px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 14px 28px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: monospace;
+            cursor: pointer;
+            box-shadow: 2px 2px 6px black;
+            transition: all 0.08s linear, transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .win95-btn:hover {
+            background: #d4d4d4;
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 8px black;
+        }
+
+        .win95-btn:active {
+            border-color: #808080 #ffffff #ffffff #808080;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 3px black;
+        }
+
+        /* External links section */
+        .external-section {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 24px;
+            padding: 20px 30px;
+            backdrop-filter: blur(4px);
+            border: 1px solid #ffffffaa;
+            width: 100%;
+            max-width: 800px;
+            animation: fadeSlideUp 0.5s ease-out 0.1s both;
+        }
+
+        .external-title {
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            text-shadow: 1px 1px 0 black;
+        }
+
+        .external-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .external-link, .windows-ico-btn {
+            background: #c0c0c0;
+            border: 3px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: monospace;
+            cursor: pointer;
+            text-decoration: none;
+            color: black;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.08s linear, transform 0.1s ease, box-shadow 0.1s ease;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .external-link:hover, .windows-ico-btn:hover {
+            background: #d4d4d4;
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 8px black;
+        }
+
+        .external-link:active, .windows-ico-btn:active {
+            border-color: #808080 #ffffff #ffffff #808080;
+            transform: translate(1px, 1px);
+        }
+
+        .download-windows-block {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #ffffff88;
+            text-align: center;
+        }
+        .download-label {
+            color: #ffd966;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 0 black;
+        }
+
+        /* OWNER PANEL */
+        .owner-page, .info-page {
+            background: #c0c0c0;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .owner-card, .info-card {
+            background: #ece9d8;
+            border: 4px ridge #ffffff;
+            max-width: 600px;
+            padding: 30px;
+            box-shadow: 10px 10px 0px #808080;
+            animation: popIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+        .owner-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .owner-btn {
+            background: #c0c0c0;
+            border: 3px outset #ffffff;
+            padding: 12px 22px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            font-family: monospace;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 1.1rem;
+            transition: all 0.1s ease, transform 0.05s linear;
+        }
+        .owner-btn:hover {
+            background: #d4d4d4;
+            transform: scale(1.02);
+        }
+        .back-btn {
+            margin-top: 30px;
+            background: silver;
+            padding: 10px 25px;
+            border: 2px outset white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.1s ease;
+        }
+        .back-btn:hover {
+            background: #b0b0b0;
+            transform: scale(1.02);
+        }
+
+        /* DESKTOP (emoji icons) */
+        .desktop {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 48px);
+            background-color: #008080;
+            overflow: hidden;
+            cursor: default;
+        }
+        .desktop-icon {
+            position: absolute;
+            width: 90px;
+            text-align: center;
+            cursor: pointer;
+            padding: 6px 2px;
+            border-radius: 4px;
+            transition: all 0.08s linear, transform 0.1s ease;
+            will-change: transform;
+        }
+        .desktop-icon:hover {
+            transform: scale(1.02);
+            background: rgba(0,0,128,0.2);
+        }
+        .desktop-icon.selected {
+            background: #000080;
+            color: white;
+        }
+        .desktop-icon .icon-emoji {
+            font-size: 48px;
+            display: block;
+            margin: 0 auto 4px;
+            filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.2));
+        }
+        .desktop-icon span {
+            font-family: monospace;
+            font-size: 12px;
+            background: #c0c0c0c9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: black;
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: inset 0 0 0 1px white;
+        }
+        .desktop-icon.selected span {
+            background: #000080cc;
+            color: white;
+            box-shadow: none;
+        }
+
+        /* TASKBAR */
+        .taskbar {
+            height: 48px;
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+        }
+        .start-button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 4px 12px;
+            font-weight: bold;
+            display: flex;
+            gap: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-family: monospace;
+            margin-right: 12px;
+            transition: all 0.08s linear;
+        }
+        .start-button:hover {
+            background: #d4d4d4;
+            transform: scale(1.02);
+        }
+        .taskbar-tray {
+            margin-left: auto;
+            background: #c0c0c0;
+            border: inset 1px #808080;
+            padding: 2px 12px;
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* START MENU ANIMATION */
+        .start-menu {
+            position: absolute;
+            bottom: 48px;
+            left: 6px;
+            width: 280px;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            z-index: 1000;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+            transform-origin: bottom left;
+            animation: menuPop 0.15s ease-out;
+        }
+        .start-menu.hidden {
+            display: none;
+        }
+        @keyframes menuPop {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .start-header {
+            background: #000080;
+            color: white;
+            padding: 8px 12px;
+            font-weight: bold;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .start-item {
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.05s linear;
+        }
+        .start-item:hover {
+            background: #000080;
+            color: white;
+        }
+        .separator { height: 2px; background: #808080; margin: 4px 0; }
+
+        /* WINDOW ANIMATION */
+        .win95-window {
+            position: absolute;
+            background: #c0c0c0;
+            border: 3px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            box-shadow: 8px 8px 12px rgba(0,0,0,0.4);
+            z-index: 200;
+            min-width: 280px;
+            resize: both;
+            overflow: auto;
+            animation: windowAppear 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        @keyframes windowAppear {
+            0% { opacity: 0; transform: scale(0.92); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .window-titlebar {
+            background: #000080;
+            padding: 5px 8px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            cursor: move;
+        }
+        .window-close {
+            background: #c0c0c0;
+            border: 1px solid #dfdfdf;
+            width: 22px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.05s linear;
+        }
+        .window-close:hover {
+            background: #a0a0a0;
+            transform: scale(1.1);
+        }
+        .window-content {
+            padding: 12px;
+            font-size: 13px;
+            background: #ece9d8;
+            height: calc(100% - 32px);
+            overflow: auto;
+        }
+
+        /* GAME STYLES */
+        .minesweeper-grid {
+            display: grid;
+            gap: 2px;
+            background: #808080;
+            padding: 4px;
+            justify-content: center;
+        }
+        .ms-cell {
+            width: 32px;
+            height: 32px;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.05s linear;
+        }
+        .ms-cell:active {
+            transform: scale(0.96);
+        }
+        .ms-cell.revealed {
+            background: #ece9d8;
+            border: 1px solid #808080;
+            line-height: 30px;
+        }
+        .ttt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 70px);
+            gap: 6px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .ttt-cell {
+            width: 70px;
+            height: 70px;
+            background: #c0c0c0;
+            border: 3px outset #ffffff;
+            font-size: 42px;
+            text-align: center;
+            line-height: 64px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.08s linear;
+        }
+        .ttt-cell:hover {
+            background: #d4d4d4;
+            transform: scale(1.02);
+        }
+        .game-status { text-align: center; margin: 10px; font-weight: bold; }
+        button.game-reset {
+            background: #c0c0c0;
+            border: 2px outset white;
+            padding: 6px 12px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-family: monospace;
+            transition: all 0.08s linear;
+        }
+        button.game-reset:hover {
+            background: #d4d4d4;
+            transform: scale(1.02);
+        }
+        .discord-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2f33;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-family: monospace;
+            z-index: 9999;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        /* Keyframes */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- START PANEL -->
+    <div id="startPanel" class="panel start-page">
+        <div class="logo-area">
+            <h1>RetroCore</h1>
+            <p>Relive the nostalgia</p>
+        </div>
+        <div class="button-group">
+            <button id="bootBtn" class="win95-btn">🖥️ Win Simulator</button>
+            <button id="infoBtn" class="win95-btn">ℹ️ INFO</button>
+            <button id="ownerBtn" class="win95-btn">👤 FIND OWNER</button>
+        </div>
+        <div class="external-section">
+            <div class="external-title">📡 EXTERNAL SITES</div>
+            <div class="external-links">
+                <a href="https://gofile.io/d/tzJmpn" target="_blank" class="external-link">🎮 R.E.P.O</a>
+                <a href="https://gdarchives.itch.io/2-206a" target="_blank" class="external-link">⚡ Geometry Dash</a>
+                <a href="https://www.roblox.com/download" target="_blank" class="external-link">🤖 Roblox</a>
+            </div>
+            <div class="download-windows-block">
+                <div class="download-label">📀 DOWNLOAD ANY WINDOWS</div>
+                <a href="https://dl.malwarewatch.org/windows/" target="_blank" class="windows-ico-btn">
+                    🪟 Windows.ico
+                </a>
+            </div>
+        </div>
+        <div style="margin-top:25px; font-size:12px; color:white; background:#00000077; padding:4px 12px; border-radius:20px;">© KrisXxXLL</div>
+    </div>
+
+    <!-- BOOT PANEL (Windows 95 Simulator) -->
+    <div id="bootPanel" class="panel hidden">
+        <div id="winDesktop" class="desktop"></div>
+        <div id="taskbar" class="taskbar"></div>
+    </div>
+
+    <!-- INFO PANEL - Updated site features -->
+    <div id="infoPanel" class="panel hidden">
+        <div class="info-page">
+            <div class="info-card">
+                <h1>✨ About RetroCore</h1>
+                <p><strong>RetroCore</strong> is a nostalgic web experience that brings back the look and feel of classic operating systems. Here's what you can do:</p>
+                <ul>
+                    <li>🖥️ <strong>Windows 95 Simulator</strong> – Boot into a fully interactive desktop with real icons, taskbar, and start menu.</li>
+                    <li>💣 <strong>Minesweeper</strong> – Classic minefield game with flags and explosions.</li>
+                    <li>❌⭕ <strong>Tic-Tac-Toe</strong> – Play against an AI opponent.</li>
+                    <li>📂 <strong>Desktop Apps</strong> – Open My Computer, Recycle Bin, Notepad, and more.</li>
+                    <li>🔗 <strong>External Links</strong> – Quick access to R.E.P.O, Geometry Dash, Roblox download, and a massive Windows archive.</li>
+                    <li>👤 <strong>Find Owner</strong> – Connect with the creator via YouTube, Roblox, and Discord.</li>
+                </ul>
+                <p>All packed in a retro Windows 95-inspired interface with emoji icons and draggable windows.</p>
+                <hr>
+                <p style="text-align: center; font-weight: bold;">👑 Created by <span style="background:black; color:lime; padding:2px 6px;">KrisXxXLL</span></p>
+                <button id="backToStartFromInfo" class="back-btn">◀ Back to Start</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OWNER PANEL -->
+    <div id="ownerPanel" class="panel hidden">
+        <div class="owner-page">
+            <div class="owner-card">
+                <h2 style="color:#000080;">👤 Find KrisXxXLL</h2>
+                <p style="margin: 15px 0;">Connect with the creator on social platforms:</p>
+                <div class="owner-links">
+                    <a href="https://www.youtube.com/@KrisXxXLLkrisipurvanov" target="_blank" class="owner-btn">🎥 YouTube</a>
+                    <a href="https://www.roblox.com/user.aspx?username=KrisXxXLL" target="_blank" class="owner-btn">🤖 Roblox</a>
+                    <button id="ownerDiscordBtn" class="owner-btn">💬 Discord (copy username)</button>
+                </div>
+                <button id="backToStartFromOwner" class="back-btn">◀ Back to Start</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // DOM elements
+    const startPanel = document.getElementById('startPanel');
+    const bootPanel = document.getElementById('bootPanel');
+    const infoPanel = document.getElementById('infoPanel');
+    const ownerPanel = document.getElementById('ownerPanel');
+    const bootBtn = document.getElementById('bootBtn');
+    const infoBtn = document.getElementById('infoBtn');
+    const ownerBtn = document.getElementById('ownerBtn');
+    const backToStartInfo = document.getElementById('backToStartFromInfo');
+    const backToStartOwner = document.getElementById('backToStartFromOwner');
+    const ownerDiscordBtn = document.getElementById('ownerDiscordBtn');
+
+    let simInitialized = false;
+    let currentZ = 300;
+
+    function showPanel(panel) {
+        startPanel.classList.add('hidden');
+        bootPanel.classList.add('hidden');
+        infoPanel.classList.add('hidden');
+        ownerPanel.classList.add('hidden');
+        if(panel === 'start') startPanel.classList.remove('hidden');
+        if(panel === 'boot') bootPanel.classList.remove('hidden');
+        if(panel === 'info') infoPanel.classList.remove('hidden');
+        if(panel === 'owner') ownerPanel.classList.remove('hidden');
+    }
+
+    function showToast(msg, duration=2000) {
+        let toast = document.querySelector('.discord-toast');
+        if(!toast){ toast = document.createElement('div'); toast.className = 'discord-toast'; document.body.appendChild(toast); }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', duration);
+    }
+
+    if(ownerDiscordBtn) {
+        ownerDiscordBtn.onclick = () => {
+            navigator.clipboard.writeText("krisxxxll_pizza_37874").then(()=>showToast("✅ Discord username copied!")).catch(()=>alert("krisxxxll_pizza_37874"));
+        };
+    }
+
+    backToStartInfo.onclick = () => showPanel('start');
+    backToStartOwner.onclick = () => showPanel('start');
+    bootBtn.onclick = () => { if(!simInitialized) initDesktop(); simInitialized=true; showPanel('boot'); };
+    infoBtn.onclick = () => showPanel('info');
+    ownerBtn.onclick = () => showPanel('owner');
+
+    // Window creation with animation handled by CSS
+    function createWindow(title, contentHTML, width=360, height=260, x=null, y=null) {
+        const desktop = document.getElementById('winDesktop');
+        const win = document.createElement('div');
+        win.className = 'win95-window';
+        win.style.width = width+'px';
+        win.style.height = height+'px';
+        win.style.left = (x!==null?x: (Math.random()*(desktop.clientWidth-width-40)+30))+'px';
+        win.style.top = (y!==null?y: (Math.random()*(desktop.clientHeight-height-80)+40))+'px';
+        win.style.zIndex = ++currentZ;
+        win.innerHTML = `<div class="window-titlebar"><span>${title}</span><div class="window-close">✖</div></div><div class="window-content">${contentHTML}</div>`;
+        desktop.appendChild(win);
+        const closeBtn = win.querySelector('.window-close');
+        closeBtn.onclick = () => win.remove();
+        const titleBar = win.querySelector('.window-titlebar');
+        let drag = false, offX, offY;
+        titleBar.onmousedown = (e) => {
+            if(e.target === closeBtn) return;
+            drag = true; offX = e.clientX - win.offsetLeft; offY = e.clientY - win.offsetTop;
+            win.style.zIndex = ++currentZ;
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        };
+        window.onmousemove = (e) => {
+            if(!drag) return;
+            let left = e.clientX - offX, top = e.clientY - offY;
+            left = Math.min(Math.max(0,left), desktop.clientWidth - win.offsetWidth);
+            top = Math.min(Math.max(0,top), desktop.clientHeight - win.offsetHeight-10);
+            win.style.left = left+'px'; win.style.top = top+'px';
+        };
+        window.onmouseup = () => { drag = false; document.body.style.userSelect = ''; };
+        return win;
+    }
+
+    // Minesweeper, TicTacToe (same as before, but with animations)
+    function openMinesweeper() {
+        const rows=6, cols=6, mineCount=6;
+        let board = Array(rows).fill().map(()=>Array(cols).fill(0));
+        let revealed = Array(rows).fill().map(()=>Array(cols).fill(false));
+        let gameActive = true;
+        function placeMines() {
+            let placed=0;
+            while(placed<mineCount){
+                let r=Math.floor(Math.random()*rows), c=Math.floor(Math.random()*cols);
+                if(board[r][c] !== -1){
+                    board[r][c] = -1;
+                    placed++;
+                }
+            }
+            for(let i=0;i<rows;i++) for(let j=0;j<cols;j++) if(board[i][j]!==-1){
+                let cnt=0;
+                for(let di=-1;di<=1;di++) for(let dj=-1;dj<=1;dj++){
+                    let ni=i+di, nj=j+dj;
+                    if(ni>=0 && ni<rows && nj>=0 && nj<cols && board[ni][nj]===-1) cnt++;
+                }
+                board[i][j]=cnt;
+            }
+        }
+        placeMines();
+        function renderGrid(container){
+            container.innerHTML='';
+            const gridDiv = document.createElement('div');
+            gridDiv.className='minesweeper-grid';
+            gridDiv.style.gridTemplateColumns=`repeat(${cols},32px)`;
+            for(let i=0;i<rows;i++){
+                for(let j=0;j<cols;j++){
+                    const cell = document.createElement('div');
+                    cell.className='ms-cell';
+                    if(revealed[i][j]){
+                        cell.classList.add('revealed');
+                        let val = board[i][j];
+                        if(val===-1) cell.innerHTML='💣';
+                        else if(val===0) cell.innerHTML='';
+                        else cell.innerHTML=val;
+                    } else {
+                        cell.innerHTML='';
+                    }
+                    cell.onclick = (e) => {
+                        e.stopPropagation();
+                        if(!gameActive) return;
+                        if(revealed[i][j]) return;
+                        if(board[i][j]===-1){
+                            cell.innerHTML='💣'; cell.classList.add('revealed');
+                            alert("💥 BOOM! Game Over.");
+                            gameActive=false;
+                            return;
+                        }
+                        function revealCell(r,c){
+                            if(r<0||r>=rows||c<0||c>=cols) return;
+                            if(revealed[r][c]) return;
+                            revealed[r][c]=true;
+                            if(board[r][c]===0){
+                                for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) revealCell(r+dr,c+dc);
+                            }
+                        }
+                        revealCell(i,j);
+                        renderGrid(container);
+                        let allSafeRevealed = true;
+                        for(let x=0;x<rows;x++) for(let y=0;y<cols;y++) if(board[x][y]!==-1 && !revealed[x][y]) allSafeRevealed=false;
+                        if(allSafeRevealed){ alert("🎉 You won! Minesweeper victory!"); gameActive=false; }
+                    };
+                    cell.oncontextmenu = (e) => {
+                        e.preventDefault();
+                        if(!gameActive) return;
+                        if(!revealed[i][j]){
+                            if(cell.innerHTML==='🚩') cell.innerHTML='';
+                            else cell.innerHTML='🚩';
+                        }
+                        return false;
+                    };
+                    gridDiv.appendChild(cell);
+                }
+            }
+            container.appendChild(gridDiv);
+        }
+        const win = createWindow("Minesweeper", `<div id="msweeper-area" style="text-align:center;"></div><button class="game-reset" id="msReset">New Game</button>`, 280, 320);
+        const area = win.querySelector('#msweeper-area');
+        const resetBtn = win.querySelector('#msReset');
+        function resetGame(){
+            board = Array(rows).fill().map(()=>Array(cols).fill(0));
+            revealed = Array(rows).fill().map(()=>Array(cols).fill(false));
+            gameActive=true;
+            placeMines();
+            renderGrid(area);
+        }
+        renderGrid(area);
+        resetBtn.onclick = () => resetGame();
+    }
+
+    function openTicTacToe() {
+        let boardT = ['','','','','','','','',''];
+        let playerTurn = true;
+        let gameActive = true;
+        function checkWinner(b){
+            const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            for(let l of lines){
+                if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[1]]===b[l[2]]) return b[l[0]];
+            }
+            if(b.every(c=>c!=='')) return 'tie';
+            return null;
+        }
+        function aiMove(){
+            if(!gameActive || playerTurn) return;
+            let empty = [];
+            for(let i=0;i<9;i++) if(boardT[i]==='') empty.push(i);
+            if(empty.length===0) return;
+            let move = empty[Math.floor(Math.random()*empty.length)];
+            boardT[move]='O';
+            let winner = checkWinner(boardT);
+            if(winner){
+                if(winner==='O') { updateStatus("🤖 AI wins! Game over."); gameActive=false; }
+                else if(winner==='tie') { updateStatus("It's a tie!"); gameActive=false; }
+                else updateStatus("You win!");
+                renderBoard();
+                return;
+            }
+            playerTurn=true;
+            updateStatus("Your turn (X)");
+            renderBoard();
+        }
+        function makeMove(idx){
+            if(!gameActive) return;
+            if(!playerTurn) return;
+            if(boardT[idx]!=='') return;
+            boardT[idx]='X';
+            let winner = checkWinner(boardT);
+            if(winner){
+                if(winner==='X') { updateStatus("🎉 You win! Congratulations!"); gameActive=false; renderBoard(); return; }
+                else if(winner==='tie') { updateStatus("Tie game!"); gameActive=false; renderBoard(); return; }
+            }
+            playerTurn=false;
+            renderBoard();
+            updateStatus("AI thinking...");
+            setTimeout(()=>{
+                if(gameActive && !playerTurn) aiMove();
+                if(checkWinner(boardT)==='X') return;
+                if(checkWinner(boardT)==='tie') return;
+                renderBoard();
+            }, 200);
+        }
+        function updateStatus(msg){
+            const statusDiv = document.querySelector('#ttt-status');
+            if(statusDiv) statusDiv.innerText = msg;
+        }
+        function renderBoard(){
+            const container = document.querySelector('#ttt-grid-cont');
+            if(!container) return;
+            container.innerHTML='';
+            const grid = document.createElement('div'); grid.className='ttt-grid';
+            for(let i=0;i<9;i++){
+                const cell = document.createElement('div');
+                cell.className='ttt-cell';
+                cell.innerText = boardT[i];
+                cell.onclick = (()=>{ if(gameActive && playerTurn && boardT[i]==='') makeMove(i); });
+                grid.appendChild(cell);
+            }
+            container.appendChild(grid);
+        }
+        const win = createWindow("Tic-Tac-Toe", `<div id="ttt-grid-cont"></div><div id="ttt-status" class="game-status">Your turn (X)</div><button class="game-reset" id="tttReset">New Game</button>`, 300, 360);
+        const resetBtn = win.querySelector('#tttReset');
+        resetBtn.onclick = () => {
+            boardT = ['','','','','','','','',''];
+            playerTurn = true;
+            gameActive = true;
+            updateStatus("Your turn (X)");
+            renderBoard();
+        };
+        renderBoard();
+        updateStatus("Your turn (X)");
+    }
+
+    function initDesktop() {
+        const desktop = document.getElementById('winDesktop');
+        const taskbarDiv = document.getElementById('taskbar');
+        desktop.innerHTML = ''; taskbarDiv.innerHTML = '';
+        
+        const startBtn = document.createElement('div');
+        startBtn.className = 'start-button';
+        startBtn.innerHTML = `<span style="font-size:1.4rem;">🏁</span> Start`;
+        taskbarDiv.appendChild(startBtn);
+        
+        const tray = document.createElement('div'); tray.className='taskbar-tray';
+        const clockSpan = document.createElement('span');
+        function updateClock(){ clockSpan.innerText = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+        updateClock(); setInterval(updateClock,1000);
+        tray.appendChild(clockSpan); taskbarDiv.appendChild(tray);
+        
+        const startMenu = document.createElement('div'); startMenu.className='start-menu hidden';
+        startMenu.innerHTML = `<div class="start-header"><span>👾</span><span>KrisXxXLL</span></div>
+            <div class="start-items"><div class="start-item" data-action="programs">📂 Programs</div><div class="start-item" data-action="documents">📄 Documents</div>
+            <div class="start-item" data-action="settings">⚙️ Settings</div><div class="start-item" data-action="run">💨 Run...</div>
+            <div class="separator"></div><div class="start-item" data-action="shutdown">🔻 Shut Down</div><div class="start-item" data-action="exitSim">❌ Exit Simulator</div></div>`;
+        desktop.appendChild(startMenu);
+        
+        let menuOpen=false;
+        function closeMenu(){ startMenu.classList.add('hidden'); menuOpen=false; if(progSub) progSub.remove(); progSub=null; }
+        function toggleMenu(){ if(menuOpen) closeMenu(); else { startMenu.classList.remove('hidden'); menuOpen=true; } }
+        startBtn.onclick = (e)=>{ e.stopPropagation(); toggleMenu(); };
+        let progSub=null;
+        
+        startMenu.querySelectorAll('.start-item').forEach(item=>{
+            item.onclick = (e)=>{
+                e.stopPropagation();
+                const act = item.getAttribute('data-action');
+                if(act==='programs'){
+                    const rect = item.getBoundingClientRect();
+                    if(progSub) progSub.remove();
+                    progSub = document.createElement('div'); progSub.className='start-menu'; progSub.style.position='absolute';
+                    progSub.style.left=(rect.left+150)+'px'; progSub.style.top=(rect.top)+'px'; progSub.style.width='180px';
+                    progSub.innerHTML = `<div class="start-items"><div class="start-item" data-app="notepad">📝 Notepad</div><div class="start-item" data-app="calc">🧮 Calculator</div>
+                    <div class="start-item" data-app="about">🖥️ About</div><div class="separator"></div><div class="start-item" data-app="mypc">💽 My Computer</div>
+                    <div class="start-item" data-app="minesweeper">💣 Minesweeper</div><div class="start-item" data-app="tictactoe">❌⭕ Tic-Tac-Toe</div></div>`;
+                    desktop.appendChild(progSub);
+                    progSub.querySelectorAll('.start-item').forEach(sub=>{
+                        sub.onclick = (ev)=>{ ev.stopPropagation(); const app=sub.getAttribute('data-app');
+                        if(app==='notepad') createWindow("Notepad","<textarea rows='10' style='width:100%;'>Windows 95 Notepad</textarea>",400,280);
+                        else if(app==='calc') createWindow("Calculator","<div style='font-size:28px;text-align:center'>0<br><button>=</button></div>",240,200);
+                        else if(app==='about') createWindow("About","<b>Windows 95 Simulator</b><br>by KrisXxXLL",300,180);
+                        else if(app==='mypc') openMyComputer();
+                        else if(app==='minesweeper') openMinesweeper();
+                        else if(app==='tictactoe') openTicTacToe();
+                        closeMenu(); };
+                    });
+                } else if(act==='documents') alert("Documents folder empty");
+                else if(act==='settings') createWindow("Control Panel","Display/Mouse settings (demo)",300,200);
+                else if(act==='run') { let cmd=prompt("Run: notepad, calc, minesweeper, tictactoe"); if(cmd==='minesweeper') openMinesweeper(); else if(cmd==='tictactoe') openTicTacToe(); else if(cmd==='notepad') createWindow("Notepad","Demo",300,200); else if(cmd==='calc') createWindow("Calc","0",200,200); else alert("unknown"); closeMenu(); }
+                else if(act==='shutdown') { if(confirm("Shut down?")) showPanel('start'); closeMenu(); }
+                else if(act==='exitSim') { showPanel('start'); closeMenu(); }
+            };
+        });
+        
+        document.addEventListener('click', (e)=>{ if(menuOpen && !startMenu.contains(e.target) && e.target!==startBtn) closeMenu(); });
+        
+        const iconsEmoji = [
+            { name: "My Computer", emoji: "🖥️", action: "mycomp", left: 20, top: 20 },
+            { name: "Recycle Bin", emoji: "🗑️", action: "recycle", left: 20, top: 110 },
+            { name: "Minesweeper", emoji: "💣", action: "mine", left: 130, top: 20 },
+            { name: "Tic-Tac-Toe", emoji: "❌⭕", action: "ttt", left: 130, top: 110 },
+            { name: "Notepad", emoji: "📝", action: "note", left: 20, top: 200 }
+        ];
+        
+        iconsEmoji.forEach(ic => {
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'desktop-icon';
+            iconDiv.style.left = ic.left + 'px';
+            iconDiv.style.top = ic.top + 'px';
+            iconDiv.innerHTML = `<div class="icon-emoji">${ic.emoji}</div><span>${ic.name}</span>`;
+            iconDiv.ondblclick = () => {
+                if(ic.action === 'mycomp') openMyComputer();
+                else if(ic.action === 'recycle') openRecycleBin();
+                else if(ic.action === 'mine') openMinesweeper();
+                else if(ic.action === 'ttt') openTicTacToe();
+                else if(ic.action === 'note') createWindow("Notepad", "<textarea rows='12' style='width:100%;'>Hello from Win95!</textarea>", 400, 300);
+            };
+            iconDiv.onclick = (e) => {
+                document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+                iconDiv.classList.add('selected');
+                e.stopPropagation();
+            };
+            desktop.appendChild(iconDiv);
+        });
+        
+        function openMyComputer() { createWindow("My Computer", "<div>💾 Local Disk (C:)<br>📁 Windows<br>📁 Program Files</div>", 300, 200); }
+        function openRecycleBin() { createWindow("Recycle Bin", "<div>🗑️ Empty</div>", 260, 150); }
+        
+        tray.ondblclick = () => alert(new Date().toDateString());
+    }
+</script>
+</body>
+</html>
